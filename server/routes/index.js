@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Hotel = require("../models").Hotel;
 const Restaurant = require("../models").Restaurant;
 const Activity = require("../models").Activity;
+const Itinerary = require("../models").Itinerary;
 
 router.get("/", (req, res, next) => {
   Promise.all([
@@ -17,6 +18,15 @@ router.get("/", (req, res, next) => {
       });
     })
     .catch(next);
+});
+
+router.get("/itineraries/:id", (req, res, next) => {
+  Itinerary.findById(req.params.id, {
+    include: {all: true, nested: true}
+  })
+  .then(result => {
+    res.json(result);
+  });
 });
 
 module.exports = router;

@@ -15,10 +15,10 @@ const state = {
   * Instantiate the Map
   */
 
-mapboxgl.accessToken = "YOUR API TOKEN HERE";
+mapboxgl.accessToken = "pk.eyJ1IjoibWlzc3ByYW4iLCJhIjoiY2plenR3YzU4MGUycDJxcW9ndzBqdGxuMCJ9.f3gj8qrycuC8H9aZDc4K4g";
 
-const fullstackCoords = [-74.009, 40.705] // NY
-// const fullstackCoords = [-87.6320523, 41.8881084] // CHI
+// const fullstackCoords = [-74.009, 40.705] // NY
+const fullstackCoords = [-87.6320523, 41.8881084]; // CHI
 
 const map = new mapboxgl.Map({
   container: "map",
@@ -67,8 +67,7 @@ const handleAddAttraction = attractionType => {
   );
 
   // If this attraction is already on state, return
-  if (state.selectedAttractions.find(attraction => attraction.id === +selectedId && attraction.category === attractionType))
-    return;
+  if (state.selectedAttractions.find(attraction => attraction.id === +selectedId && attraction.category === attractionType)) {return;}
 
   //Build and add attraction
   buildAttractionAssets(attractionType, selectedAttraction);
@@ -116,3 +115,12 @@ const buildAttractionAssets = (category, attraction) => {
     map.flyTo({ center: fullstackCoords, zoom: 12.3 });
   });
 };
+
+const loadItinerary = id => {
+  let itinerary = api.fetchItinerary(id)
+  .then(({hotels, activities, restaurants}) => {
+    console.log(hotels);
+  })
+}
+
+loadItinerary(1);

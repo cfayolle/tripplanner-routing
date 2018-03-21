@@ -551,12 +551,14 @@ const state = {
   * Instantiate the Map
   */
 
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiY2Fzc2lvemVuIiwiYSI6ImNqNjZydGl5dDJmOWUzM3A4dGQyNnN1ZnAifQ.0ZIRDup0jnyUFVzUa_5d1g";
+mapboxgl.accessToken = "pk.eyJ1IjoibWlzc3ByYW4iLCJhIjoiY2plenR3YzU4MGUycDJxcW9ndzBqdGxuMCJ9.f3gj8qrycuC8H9aZDc4K4g";
+
+// const fullstackCoords = [-74.009, 40.705] // NY
+const fullstackCoords = [-87.6320523, 41.8881084]; // CHI
 
 const map = new mapboxgl.Map({
   container: "map",
-  center: [-74.009, 40.705], // FullStack coordinates
+  center: fullstackCoords,
   zoom: 12, // starting zoom
   style: "mapbox://styles/mapbox/streets-v10" // mapbox has lots of different map styles available.
 });
@@ -601,8 +603,7 @@ const handleAddAttraction = attractionType => {
   );
 
   // If this attraction is already on state, return
-  if (state.selectedAttractions.find(attraction => attraction.id === +selectedId && attraction.category === attractionType))
-    return;
+  if (state.selectedAttractions.find(attraction => attraction.id === +selectedId && attraction.category === attractionType)) {return;}
 
   //Build and add attraction
   buildAttractionAssets(attractionType, selectedAttraction);
@@ -647,9 +648,18 @@ const buildAttractionAssets = (category, attraction) => {
     console.log(state);
 
     // Animate map to default position & zoom.
-    map.flyTo({ center: [-74.0, 40.731], zoom: 12.3 });
+    map.flyTo({ center: fullstackCoords, zoom: 12.3 });
   });
 };
+
+const loadItinerary = id => {
+  let itinerary = api.fetchItinerary(id)
+  .then(({hotels, activities, restaurants}) => {
+    console.log(hotels);
+  })
+}
+
+loadItinerary(1);
 
 
 /***/ }),
@@ -686,10 +696,16 @@ module.exports = g;
 const fetchAttractions = () =>
   fetch("/api")
     .then(result => result.json())
-    .catch(console.error);
+    .catch(err => console.error(err));
+
+const fetchItinerary = (id) =>
+  fetch("/api/itineraries/" + id)
+    .then(result => result.json())
+    .catch(err => console.error(err));
 
 module.exports = {
-  fetchAttractions
+  fetchAttractions,
+  fetchItinerary
 };
 
 
