@@ -21,25 +21,28 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/itineraries/:id", (req, res, next) => {
-  Itinerary.findById(req.params.id, {
+  Itinerary.findOne({where: {
+    hash: req.params.id,
+  },
     include: {all: true, nested: true}
   })
   .then(result => {
+    console.log("hello", result);
     res.json(result);
   });
 });
 
-router.post("/itineraries/:id", (req, res, next) => {
-  let id = req.params.id;
+router.post("/itineraries/:hash", (req, res, next) => {
+  let hash = req.params.hash;
   let Hotels = req.body[0];
   let Restaurants = req.body[1];
   let Activities = req.body[2];
   let newItinerary;
-  
-  if (id == "0")
-    id = null;
-  
-  Itinerary.findOrCreate({where: {id}})
+
+  if (hash == "0")
+    hash = Math.random().toString(36).slice(5);
+
+  Itinerary.findOrCreate({where: {hash}})
   .then(result => {
     newItinerary = result[0];
     return newItinerary.setHotels(Hotels.map(value => value.id), {through: "itinerary-hotel"})

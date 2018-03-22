@@ -112,7 +112,7 @@ const buildAttractionAssets = (category, attraction) => {
 
     // Animate map to default position & zoom.
     map.flyTo({ center: fullstackCoords, zoom: 12.3 });
-    
+
     saveItinerary();
   });
 };
@@ -146,7 +146,7 @@ const saveItinerary = () => {
     else
       itinArray[2].push(element);
   });
-  api.postItinerary(id, itinArray).then(result => location.hash = "#" + result.id)
+  api.postItinerary(id, itinArray).then(result => location.hash = "#" + result.hash)
 }
 
 window.addEventListener('hashchange', ()=> {

@@ -7,7 +7,7 @@ const fetchItinerary = (id) =>
   fetch("/api/itineraries/" + id)
     .then(result => result.json())
     .catch(err => console.error(err));
-    
+
 const postItinerary = (id, itin) => {
   return fetch("/api/itineraries/" + id, {
     body: JSON.stringify(itin),
