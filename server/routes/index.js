@@ -29,4 +29,37 @@ router.get("/itineraries/:id", (req, res, next) => {
   });
 });
 
+router.post("/itineraries", (req, res, next) => {
+  console.log(req.body)
+  let Hotels = req.body[0];
+  let Restaurants = req.body[1];
+  let Activities = req.body[2];
+  let newItinerary;
+  console.log("hotel:", Hotels);
+  Itinerary.create()
+  .then(result => {
+    newItinerary = result;
+    return Promise.all(Hotels.map(hotel => {
+      result.addHotel(hotel.id, {through: "itinerary-hotel"})
+    }))
+  })
+  .then( () => {
+    return Promise.all(Restaurants.map(restaurant => {
+      newItinerary.addRestaurant(restaurant.id, {through: "itinerary-restaurant"})
+    }))
+  })
+  .then( () => {
+    return Promise.all(Activities.map(activity => {
+      newItinerary.addActivity(activity.id, {through: "itinerary-activity"})
+    }))
+  })
+  .then( () => {
+    res.json(newItinerary);
+  })
+  .catch(next);
+
+
+
+})
+
 module.exports = router;

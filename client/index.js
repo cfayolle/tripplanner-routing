@@ -119,8 +119,14 @@ const buildAttractionAssets = (category, attraction) => {
 const loadItinerary = id => {
   let itinerary = api.fetchItinerary(id)
   .then(({hotels, activities, restaurants}) => {
-    console.log(hotels);
+    console.log(`[${JSON.stringify(hotels)}, ${JSON.stringify(restaurants)}, ${JSON.stringify(activities)}]`);
+    hotels.forEach(hotel => buildAttractionAssets('hotels', hotel));
+    activities.forEach(activity => buildAttractionAssets('activities', activity));
+    restaurants.forEach(restaurant => buildAttractionAssets('restaurants', restaurant));
   })
 }
 
-loadItinerary(1);
+window.addEventListener('hashchange', ()=> {
+  loadItinerary(location.hash.slice(1));
+})
+
