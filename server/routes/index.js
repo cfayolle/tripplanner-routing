@@ -29,34 +29,34 @@ router.get("/itineraries/:id", (req, res, next) => {
   });
 });
 
-router.post("/itineraries", (req, res, next) => {
-  console.log(req.body)
+router.post("/itineraries/:id", (req, res, next) => {
+  let id = req.params.id;
   let Hotels = req.body[0];
   let Restaurants = req.body[1];
   let Activities = req.body[2];
   let newItinerary;
-  console.log("hotel:", Hotels);
-  Itinerary.create()
+  
+  if (id == "0")
+    id = null;
+  
+  Itinerary.findOrCreate({where: {id}})
   .then(result => {
-    newItinerary = result;
-    return Promise.all(Hotels.map(hotel => {
-      result.addHotel(hotel.id, {through: "itinerary-hotel"})
-    }))
+    newItinerary = result[0];
+    return newItinerary.setHotels(Hotels.map(value => value.id), {through: "itinerary-hotel"})
   })
   .then( () => {
-    return Promise.all(Restaurants.map(restaurant => {
-      newItinerary.addRestaurant(restaurant.id, {through: "itinerary-restaurant"})
-    }))
+    return newItinerary.setRestaurants(Restaurants.map(value => value.id), {through: "itinerary-restaurant"})
   })
   .then( () => {
-    return Promise.all(Activities.map(activity => {
-      newItinerary.addActivity(activity.id, {through: "itinerary-activity"})
-    }))
+    return newItinerary.setActivities(Activities.map(value => value.id), {through: "itinerary-activity"})
   })
   .then( () => {
     res.json(newItinerary);
   })
-  .catch(next);
+  .catch(error => {
+    console.log(error);
+    next();
+  });
 
 
 

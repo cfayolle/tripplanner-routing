@@ -71,6 +71,7 @@ const handleAddAttraction = attractionType => {
 
   //Build and add attraction
   buildAttractionAssets(attractionType, selectedAttraction);
+  saveItinerary();
 };
 
 const buildAttractionAssets = (category, attraction) => {
@@ -109,24 +110,47 @@ const buildAttractionAssets = (category, attraction) => {
     itineraryItem.remove();
     marker.remove();
 
-    console.log(state);
-
     // Animate map to default position & zoom.
     map.flyTo({ center: fullstackCoords, zoom: 12.3 });
+    
+    saveItinerary();
   });
 };
 
+const clearItinerary = () => {
+  state.selectedAttractions =[];
+  document.getElementById("activities-list").innerHTML = "";
+  document.getElementById("restaurants-list").innerHTML = "";
+  document.getElementById("hotels-list").innerHTML = "";
+}
+
 const loadItinerary = id => {
+  clearItinerary();
   let itinerary = api.fetchItinerary(id)
   .then(({hotels, activities, restaurants}) => {
-    console.log(`[${JSON.stringify(hotels)}, ${JSON.stringify(restaurants)}, ${JSON.stringify(activities)}]`);
     hotels.forEach(hotel => buildAttractionAssets('hotels', hotel));
     activities.forEach(activity => buildAttractionAssets('activities', activity));
     restaurants.forEach(restaurant => buildAttractionAssets('restaurants', restaurant));
   })
 }
 
+const saveItinerary = () => {
+  let id = 0;
+  if (location.hash) id = location.hash.slice(1);
+  let itinArray = [[], [], []];
+  state.selectedAttractions.forEach(element => {
+    if (element.category === "hotels")
+      itinArray[0].push(element);
+    else if (element.category === "restaurants")
+      itinArray[1].push(element);
+    else
+      itinArray[2].push(element);
+  });
+  api.postItinerary(id, itinArray).then(result => location.hash = "#" + result.id)
+}
+
 window.addEventListener('hashchange', ()=> {
   loadItinerary(location.hash.slice(1));
 })
 
+document.getElementById("save-btn").addEventListener("click", saveItinerary);
